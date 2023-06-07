@@ -16,8 +16,8 @@ RUN npm install
 # add app
 COPY . ./
 
-# start app
-CMD ["npm", "build"]
+# build app
+RUN npm run build
 
 FROM nginx
 
