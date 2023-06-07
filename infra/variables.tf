@@ -3,5 +3,5 @@ variable "location" {
 }
 
 variable "environment" {
-    default = "devel"
+    default = "stage"
 }

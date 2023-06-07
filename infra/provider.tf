@@ -9,7 +9,7 @@ terraform {
     resource_group_name  = "sshkey"
     storage_account_name = "ccseyhan"
     container_name       = "fullstack-terraform-backend"
-    key                  = "prodgit sstat.terraform.tfstate"
+    key                  = "stage.terraform.tfstate"
   }
 }
 
