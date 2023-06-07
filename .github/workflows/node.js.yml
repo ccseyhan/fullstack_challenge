@@ -24,7 +24,6 @@ jobs:
       - name: install dependencies to the agent
         run: | 
             npm install -g prettier
-            npm install -g linter
       
       - name: install npm 
         run: npm install
