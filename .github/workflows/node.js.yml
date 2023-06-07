@@ -13,7 +13,7 @@ jobs:
   Testing:
     runs-on: ubuntu-latest
     env:
-      working-directory: /rdicidr-0.1.0/
+      working-directory: rdicidr-0.1.0/
     steps: 
       - uses: actions/setup-node@v3
         with:
