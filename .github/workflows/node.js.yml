@@ -9,6 +9,19 @@ on:
   pull_request:
     branches: [ "*" ]
 
+#Special permissions required for OIDC authentication
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+#These environment variables are used by the terraform azure provider to setup OIDD authenticate. 
+env:
+  ARM_CLIENT_ID: "${{ secrets.AZURE_CLIENT_ID }}"
+  ARM_SUBSCRIPTION_ID: "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+  ARM_TENANT_ID: "${{ secrets.AZURE_TENANT_ID }}"
+  ARM_CLIENT_SECRET: "${{ secrets.AZURE_CLIENT_SECRET }}"
+
 jobs:
   Testing:
     runs-on: ubuntu-latest
@@ -40,6 +53,7 @@ jobs:
       - name: Test (Jest)
         run: CI=true npm run test
         working-directory: ${{ env.working-directory }}
+  
   build_the_app:
     runs-on: ubuntu-latest
     needs: Testing
@@ -61,7 +75,79 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/rdicidr:0.1.0
           context: rdicidr-0.1.0/
       
+  infra_prod: 
+    runs-on: ubuntu-latest
+    needs: build_the_app
+    env:
+      working-directory: infra/
+    steps:
       
+      - uses: hashicorp/setup-terraform@v2
       
+      - uses: actions/checkout@v3
+        with:
+          ref: main
+          
+      - name: terraform init
+        run: terraform init 
+        working-directory: ${{ env.working-directory }}
+        
+      - name: terraform plan
+        run: terraform plan
+        working-directory: ${{ env.working-directory }}
+        
+      - name: deploy
+        run: terraform apply --auto-aprove
+        working-directory: ${{ env.working-directory }}
+        
+  infra_devel: 
+      runs-on: ubuntu-latest
+      needs: build_the_app
+      env:
+        working-directory: infra/
+      steps:
+
+        - uses: hashicorp/setup-terraform@v2
+
+        - uses: actions/checkout@v3
+          with:
+            ref: devel
+
+        - name: terraform init
+          run: terraform init 
+          working-directory: ${{ env.working-directory }}
+
+        - name: terraform plan
+          run: terraform plan
+          working-directory: ${{ env.working-directory }}
+
+        - name: deploy
+          run: terraform apply --auto-aprove
+          working-directory: ${{ env.working-directory }}
+          
+  infra_stage: 
+      runs-on: ubuntu-latest
+      needs: build_the_app
+      env:
+        working-directory: infra/
+      steps:
+
+        - uses: hashicorp/setup-terraform@v2
+
+        - uses: actions/checkout@v3
+          with:
+            ref: stage
+
+        - name: terraform init
+          run: terraform init 
+          working-directory: ${{ env.working-directory }}
+
+        - name: terraform plan
+          run: terraform plan
+          working-directory: ${{ env.working-directory }}
+
+        - name: deploy
+          run: terraform apply --auto-aprove
+          working-directory: ${{ env.working-directory }}    
     
     
