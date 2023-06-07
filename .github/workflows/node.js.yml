@@ -1,0 +1,44 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: fullstack_challenge
+
+on:
+  push:
+    branches: [ "*" ]
+  pull_request:
+    branches: [ "*" ]
+
+jobs:
+  Testing:
+    runs-on: ubuntu-latest
+    env:
+      working-directory: /rdicidr-0.1.0/
+    steps: 
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '15.10'
+          
+      - uses: actions/checkout@v3
+      
+      - name: install dependencies to the agent
+        run: | 
+            npm install -g prettier
+            npm install -g linter
+      
+      - name: install npm 
+        run: npm install
+        working-directory: ${{ env.working-directory }}
+        
+      - name: Linter
+        run: npm run lint
+        working-directory: ${{ env.working-directory }}
+        
+      - name: Formatter
+        run: npm run prettier
+        working-directory: ${{ env.working-directory }}
+        
+      - name: Test (Jest)
+        run: CI=true npm run test
+        working-directory: ${{ env.working-directory }}
+      
